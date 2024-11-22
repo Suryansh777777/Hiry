@@ -1,11 +1,20 @@
-import Hero from "@/sections/Hero";
-import Navbar from "@/sections/Navbar";
+"use client";
 
-export default function Home() {
+import { OnboardingSteps } from "@/components/onboardingsteps";
+import { Sidebar } from "@/components/sidebar";
+import { RecoilRoot } from "recoil";
+import Navbar from "@/components/Navbar";
+
+export default function CompanyOnboarding() {
   return (
-    <>
+    <RecoilRoot>
       <Navbar />
-      <Hero />
-    </>
+      <div className="flex min-h-screen bg-white pt-16">
+        <Sidebar />
+        <main className="flex-1 px-6 py-12 lg:px-12 xl:px-24 max-w-[1200px]">
+          <OnboardingSteps />
+        </main>
+      </div>
+    </RecoilRoot>
   );
 }
