@@ -18,12 +18,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { StepLayout } from "../steplayout";
+import { useToast } from "@/components/ui/use-toast";
 
 export function DetailsStep() {
   const [data, setData] = useRecoilState(onboardingDataState);
   const setCurrentStep = useSetRecoilState(currentStepState);
   const setErrors = useSetRecoilState(errorsState);
   const { details } = data;
+  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +38,14 @@ export function DetailsStep() {
     if (Object.keys(newErrors).length > 0) {
       setErrors((prev) => ({ ...prev, details: newErrors }));
     } else {
+      if (!details.industry || !details.location || !details.timezone) {
+        toast({
+          variant: "destructive",
+          title: "Missing Information",
+          description: "Please complete all required company details.",
+        });
+        return;
+      }
       setCurrentStep("profile");
     }
   };

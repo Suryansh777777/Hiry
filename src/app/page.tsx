@@ -11,7 +11,7 @@ export default function CompanyOnboarding() {
       <Navbar />
       <div className="flex min-h-screen bg-white pt-16">
         <Sidebar />
-        <main className="flex-1 px-6 py-12 lg:px-12 xl:px-24 max-w-[1200px]">
+        <main className="px-20 py-8">
           <OnboardingSteps />
         </main>
       </div>

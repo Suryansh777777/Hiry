@@ -34,7 +34,7 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-64 bg-white px-6 py-8">
+    <aside className="w-96 bg-white px-10 py-10">
       <nav className="relative">
         {sidebarItems.map((item, index) => {
           const Icon = item.icon;
@@ -42,11 +42,11 @@ export function Sidebar() {
           
           return (
             <div key={item.id} className="relative">
-              <div className="flex items-center gap-3 py-3">
+              <div className="flex items-center gap-1 ">
                 {/* Icon Container */}
                 <div
                   className={cn(
-                    "relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300",
+                    "relative flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300",
                     {
                       "bg-emerald-50": status === "completed",
                       "bg-blue-600": status === "current",
@@ -68,7 +68,7 @@ export function Sidebar() {
 
                 {/* Label */}
                 <span
-                  className={cn("text-sm transition-all duration-300", {
+                  className={cn("text-md transition-all duration-300", {
                     "font-semibold text-gray-900": status === "current",
                     "text-gray-900": status === "completed",
                     "text-gray-500": status === "upcoming" || status === "past",
@@ -80,7 +80,7 @@ export function Sidebar() {
 
               {/* Connector Line */}
               {index < sidebarItems.length - 1 && (
-                <div className="relative ml-5 h-12">
+                <div className="relative ml-4 h-8">
                   <div
                     className={cn(
                       "absolute inset-y-0 left-0 w-0.5 transition-all duration-500",

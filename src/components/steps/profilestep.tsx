@@ -11,12 +11,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LogoUpload } from "../ui/logoupload";
 import { StepLayout } from "../steplayout";
+import { useToast } from "@/components/ui/use-toast";
 
 export function ProfileStep() {
   const [data, setData] = useRecoilState(onboardingDataState);
   const setCurrentStep = useSetRecoilState(currentStepState);
   const setErrors = useSetRecoilState(errorsState);
   const { profile, company } = data;
+  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +30,14 @@ export function ProfileStep() {
     if (Object.keys(newErrors).length > 0) {
       setErrors((prev) => ({ ...prev, profile: newErrors }));
     } else {
+      if (!profile.firstName || !profile.lastName || !profile.position) {
+        toast({
+          variant: "destructive",
+          title: "Incomplete Profile",
+          description: "Please fill in all profile information before continuing.",
+        });
+        return;
+      }
       setCurrentStep("team");
     }
   };

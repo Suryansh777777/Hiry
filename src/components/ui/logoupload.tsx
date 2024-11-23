@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
 interface LogoUploadProps {
   onUpload: (file: File) => void;
@@ -16,11 +17,21 @@ export function LogoUpload({
 }: LogoUploadProps) {
   const [uploadStatus, setUploadStatus] = useState<
     "idle" | "uploading" | "uploaded"
-  >("idle");
+  >(logo ? "uploaded" : "idle");
+  const { toast } = useToast();
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        toast({
+          variant: "destructive",
+          title: "File too large",
+          description: "Please upload an image smaller than 10MB.",
+        });
+        return;
+      }
+      
       setUploadStatus("uploading");
       // Simulate upload process
       setTimeout(() => {
@@ -30,31 +41,36 @@ export function LogoUpload({
     }
   };
 
+  const handleRemove = () => {
+    onRemove();
+    setUploadStatus("idle");
+  };
+
   return (
-    <div className="mb-8">
-      <div className="flex items-center space-x-6">
+    <div className="mb-2">
+      <div className="flex items-center space-x-4 gap-3 pt-2">
         {logo ? (
           <img
             src={logo}
             alt="Company logo"
-            className="h-24 w-24 rounded-full object-cover"
+            className="h-28 w-28 rounded-full object-cover"
           />
         ) : (
-          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-emerald-50">
+          <div className="flex h-28 w-28 items-center justify-center rounded-full bg-emerald-50">
             <span className="text-4xl font-medium text-emerald-500">
               {companyInitial || "A"}
             </span>
           </div>
         )}
-        <div className="space-y-1">
+        <div className="mt-2 space-y-1">
           <h3 className="text-sm font-medium text-gray-900">
             Upload your company logo
           </h3>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs text-gray-500">
             Add a picture to foster trust with potential hires.
           </p>
-          <p className="text-sm text-gray-500">Maximum size 10MB.</p>
-          <div className="pt-1">
+          <p className="text-xs text-gray-500">Maximum size 10MB.</p>
+          <div className="pt-1 space-x-2">
             <input
               id="logo-upload"
               type="file"
@@ -66,7 +82,7 @@ export function LogoUpload({
             {uploadStatus === "idle" && (
               <label
                 htmlFor="logo-upload"
-                className="inline-flex cursor-pointer items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="inline-flex cursor-pointer items-center justify-center rounded-3xl bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Upload
               </label>
@@ -75,13 +91,21 @@ export function LogoUpload({
               <span className="text-sm text-gray-500">Uploading...</span>
             )}
             {uploadStatus === "uploaded" && (
-              <Button
-                variant="outline"
-                onClick={onRemove}
-                className="text-sm text-red-600 hover:text-red-700"
-              >
-                Remove
-              </Button>
+              <>
+                <label
+                  htmlFor="logo-upload"
+                  className="inline-flex cursor-pointer items-center justify-center rounded-3xl bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                >
+                  Replace
+                </label>
+                <Button
+                  variant="outline"
+                  onClick={handleRemove}
+                  className="text-sm text-red-600 hover:text-red-700"
+                >
+                  Remove
+                </Button>
+              </>
             )}
           </div>
         </div>

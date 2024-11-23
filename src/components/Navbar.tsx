@@ -4,8 +4,8 @@ import Link from 'next/link';
 const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white ">
-      <div className="mx-auto px-12">
-        <div className="flex items-center h-16">
+      <div className="mx-auto px-10">
+        <div className="flex items-center h-20">
           <Link href="/" className="flex items-center">
             <Image 
               src="/assets/hirylogo.png" 
