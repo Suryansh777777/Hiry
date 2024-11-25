@@ -1,84 +1,70 @@
 import { atom, selector } from "recoil";
 import type { OnboardingData, OnboardingStep } from "../types/onboarding";
 
-const defaultData: OnboardingData = {
-  company: { logo: null, name: "", website: "", linkedinProfile: "" },
-  details: {
-    about: "",
-    industry: "",
-    location: "",
-    languages: [],
-    timezone: "",
+// Base onboarding data state
+export const onboardingDataState = atom<OnboardingData>({
+  key: "onboardingData",
+  default: {
+    company: {
+      name: "",
+      website: "",
+      linkedinProfile: "",
+      logo: null,
+    },
+    details: {
+      about: "",
+      industry: "",
+      location: "",
+      languages: [],
+      timezone: "",
+    },
+    profile: {
+      firstName: "",
+      lastName: "",
+      position: "",
+      avatar: null,
+    },
+    team: [],
   },
-  profile: { avatar: null, firstName: "", lastName: "", position: "" },
-  team: [],
-};
+});
 
+// Current step state
 export const currentStepState = atom<OnboardingStep>({
-  key: "currentStepState",
+  key: "currentStep",
   default: "company",
 });
 
-export const onboardingDataState = atom<OnboardingData>({
-  key: "onboardingDataState",
-  default: defaultData,
-});
-
-export const errorsState = atom<Record<OnboardingStep, Record<string, string>>>(
-  {
-    key: "errorsState",
-    default: {
-      company: {},
-      details: {},
-      profile: {},
-      team: {},
-    },
-  }
-);
-
-export const isStepCompleteState = selector<Record<OnboardingStep, boolean>>({
-  key: "isStepCompleteState",
-  get: ({ get }) => {
-    const data = get(onboardingDataState);
-    
-    return {
-      company: Boolean(
-        data.company.name &&
-        data.company.website &&
-        data.company.linkedinProfile
-      ),
-      details: Boolean(
-        data.details.about &&
-        data.details.industry &&
-        data.details.location &&
-        data.details.timezone
-      ),
-      profile: Boolean(
-        data.profile.firstName &&
-        data.profile.lastName &&
-        data.profile.position
-      ),
-      team: true, // Team step is optional
-    };
-  },
-});
-
-export const stepTransitionState = atom({
-  key: 'stepTransitionState',
+// Step completion state
+export const completedStepsState = atom<Record<OnboardingStep, boolean>>({
+  key: "completedSteps",
   default: {
-    isTransitioning: false,
-    from: null as OnboardingStep | null,
-    to: null as OnboardingStep | null,
+    company: false,
+    details: false,
+    profile: false,
+    team: false,
   },
 });
 
-// Helper function to handle step transitions
-export const transitionToNextStep = selector({
-  key: 'transitionToNextStep',
-  get: ({ get }) => {
-    const currentStep = get(currentStepState);
-    const stepOrder: OnboardingStep[] = ["company", "details", "profile", "team"];
-    const currentIndex = stepOrder.indexOf(currentStep);
-    return stepOrder[currentIndex + 1];
+// Validation errors state
+export const errorsState = atom<Record<string, Record<string, string>>>({
+  key: "errors",
+  default: {},
+});
+
+// Selector to check if a step is complete
+export const isStepCompleteState = selector({
+  key: "isStepComplete",
+  get: ({ get }) => get(completedStepsState),
+});
+
+// Action to mark step as complete
+export const markStepCompleteAction = selector({
+  key: "markStepComplete",
+  get: ({ get }) => get(completedStepsState),
+  set: ({ set }, stepId: OnboardingStep) => {
+    set(completedStepsState, (prevState) => ({
+      ...prevState,
+      [stepId]: true,
+    }));
   },
 });

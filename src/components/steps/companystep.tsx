@@ -1,10 +1,12 @@
 "use client";
 
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   onboardingDataState,
   currentStepState,
   errorsState,
+  markStepCompleteAction,
+  completedStepsState,
 } from "../../store/onboarding";
 import { LogoUpload } from "../ui/logoupload";
 import { Input } from "@/components/ui/input";
@@ -13,32 +15,60 @@ import { Button } from "@/components/ui/button";
 import { Link } from "lucide-react";
 import { StepLayout } from "../steplayout";
 import { useToast } from "@/components/ui/use-toast";
+import { FormField } from '../forms/FormField';
+import { SelectField } from '../forms/SelectField';
+import { AboutField } from '../forms/AboutField';
 
 export function CompanyStep() {
   const [data, setData] = useRecoilState(onboardingDataState);
-  const setCurrentStep = useSetRecoilState(currentStepState);
+  const [currentStep, setCurrentStep] = useRecoilState(currentStepState);
   const setErrors = useSetRecoilState(errorsState);
+  const errors = useRecoilValue(errorsState);
+  const setStepComplete = useSetRecoilState(markStepCompleteAction);
+  const completedSteps = useRecoilValue(completedStepsState);
   const { toast } = useToast();
 
   const { company } = data;
+  const companyErrors = errors?.company || {};
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const validateForm = () => {
     const newErrors: Record<string, string> = {};
     if (!company.name) newErrors.name = "Company name is required";
     if (!company.website) newErrors.website = "Website is required";
     if (!company.linkedinProfile)
       newErrors.linkedinProfile = "LinkedIn profile is required";
+    return newErrors;
+  };
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors((prev) => ({ ...prev, company: newErrors }));
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const validationErrors = validateForm();
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors((prev) => ({ ...prev, company: validationErrors }));
       toast({
         variant: "destructive",
         title: "Validation Error",
         description: "Please fill in all required fields before proceeding.",
       });
-    } else {
+      return;
+    }
+
+    try {
+
+      setStepComplete("company");
       setCurrentStep("details");
+
+      // toast({
+      //   title: "Success",
+      //   description: "Company information saved successfully.",
+      // });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save company information. Please try again.",
+      });
     }
   };
 
@@ -56,7 +86,7 @@ export function CompanyStep() {
     <StepLayout
       step={1}
       title="Company info"
-      description="To build a trusted community, we verify all companies on our platform. Providing your website and LinkedIn profile allows us to confirm legitimacy and keep standards high."
+      description="To build a trusted community, we verify all companies on our platform."
     >
       <form onSubmit={handleSubmit} className="flex flex-col">
         <div className="space-y-6 text-gray-900">
@@ -70,19 +100,25 @@ export function CompanyStep() {
           />
 
           <div className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="name">Company name</Label>
+            <FormField
+              id="name"
+              label="Company name"
+              error={companyErrors.name}
+            >
               <Input
                 id="name"
-                className="h-10 rounded-xl placeholder:text-base placeholder:text-gray-400 "
+                className="h-10 rounded-xl placeholder:text-base placeholder:text-gray-400"
                 value={company.name}
                 onChange={(e) => updateCompanyData("name", e.target.value)}
                 placeholder="Acme Inc."
               />
-            </div>
+            </FormField>
 
-            <div className="space-y-2">
-              <Label htmlFor="website">Website</Label>
+            <FormField
+              id="website"
+              label="Website"
+              error={companyErrors.website}
+            >
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
                   <Link className="h-4 w-4 text-gray-400" />
@@ -91,38 +127,41 @@ export function CompanyStep() {
                   id="website"
                   value={company.website}
                   onChange={(e) => updateCompanyData("website", e.target.value)}
-                    className="h-10 rounded-xl placeholder:text-base placeholder:text-gray-400 pl-9"
+                  className="h-10 rounded-xl placeholder:text-base placeholder:text-gray-400 pl-9"
                   placeholder="acme.inc"
                 />
               </div>
-            </div>
+            </FormField>
 
-            <div className="space-y-2 ">
-              <Label htmlFor="linkedin">LinkedIn profile</Label>
+            <FormField
+              id="linkedin"
+              label="LinkedIn profile"
+              error={companyErrors.linkedinProfile}
+            >
               <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400">
-              linkedin.com/
+                <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400">
+                  linkedin.com/
                 </div>
-              <Input
-                id="linkedin"
-                value={company.linkedinProfile}
-                onChange={(e) =>
-                  updateCompanyData("linkedinProfile", e.target.value)
-                }
-                 className="h-10 rounded-xl placeholder:text-base placeholder:text-gray-400 pl-28"
-                placeholder="username"
-              />
-            </div>
-            </div>
+                <Input
+                  id="linkedin"
+                  value={company.linkedinProfile}
+                  onChange={(e) => updateCompanyData("linkedinProfile", e.target.value)}
+                  className="h-10 rounded-xl placeholder:text-base placeholder:text-gray-400 pl-28"
+                  placeholder="username"
+                />
+              </div>
+            </FormField>
           </div>
         </div>
 
-        <Button 
-          type="submit" 
-          className="w-full py-6 rounded-3xl bg-blue-600 mt-8"
-        >
-          Continue
-        </Button>
+        <div className="flex flex-col gap-4 mt-8">
+          <Button
+            type="submit"
+            className="flex-1 rounded-3xl py-3 bg-electric-dark"
+          >
+            Continue
+          </Button>
+        </div>
       </form>
     </StepLayout>
   );

@@ -5,6 +5,7 @@ import {
   onboardingDataState,
   currentStepState,
   errorsState,
+  markStepCompleteAction,
 } from "../../store/onboarding";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,33 +13,58 @@ import { Label } from "@/components/ui/label";
 import { LogoUpload } from "../ui/logoupload";
 import { StepLayout } from "../steplayout";
 import { useToast } from "@/components/ui/use-toast";
+import { ArrowLeft } from "lucide-react";
+import { FormField } from "../forms/FormField";
 
 export function ProfileStep() {
   const [data, setData] = useRecoilState(onboardingDataState);
-  const setCurrentStep = useSetRecoilState(currentStepState);
-  const setErrors = useSetRecoilState(errorsState);
-  const { profile, company } = data;
+  const [currentStep, setCurrentStep] = useRecoilState(currentStepState);
+  const [errors, setErrors] = useRecoilState(errorsState);
+  const setStepComplete = useSetRecoilState(markStepCompleteAction);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const { profile, company } = data;
+  const profileErrors = errors.profile || {};
+
+  const validateForm = () => {
     const newErrors: Record<string, string> = {};
     if (!profile.firstName) newErrors.firstName = "First name is required";
     if (!profile.lastName) newErrors.lastName = "Last name is required";
     if (!profile.position) newErrors.position = "Position is required";
+    return newErrors;
+  };
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors((prev) => ({ ...prev, profile: newErrors }));
-    } else {
-      if (!profile.firstName || !profile.lastName || !profile.position) {
-        toast({
-          variant: "destructive",
-          title: "Incomplete Profile",
-          description: "Please fill in all profile information before continuing.",
-        });
-        return;
-      }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const validationErrors = validateForm();
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors((prev) => ({ ...prev, profile: validationErrors }));
+      toast({
+        variant: "destructive",
+        title: "Validation Error",
+        description: "Please fill in all required fields before proceeding.",
+      });
+      return;
+    }
+
+    try {
+
+      setStepComplete("profile");
+
+
       setCurrentStep("team");
+
+      // toast({
+      //   title: "Success",
+      //   description: "Profile information saved successfully.",
+      // });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save profile information. Please try again.",
+      });
     }
   };
 
@@ -58,64 +84,80 @@ export function ProfileStep() {
       title="Your profile"
       description="Tell us about yourself"
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <LogoUpload
-          onUpload={(file) =>
-            updateProfileData("avatar", URL.createObjectURL(file))
-          }
-          onRemove={() => updateProfileData("avatar", null)}
-          logo={profile.avatar}
-          companyInitial={profile.firstName.charAt(0)}
-        />
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <Label htmlFor="firstName">First name</Label>
-            <Input
-              id="firstName"
-              value={profile.firstName}
-              onChange={(e) => updateProfileData("firstName", e.target.value)}
-              placeholder="Jane"
-              aria-describedby="firstName-error"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="lastName">Last name</Label>
-            <Input
-              id="lastName"
-              value={profile.lastName}
-              onChange={(e) => updateProfileData("lastName", e.target.value)}
-              placeholder="Doe"
-              aria-describedby="lastName-error"
-            />
-          </div>
-        </div>
-
-        <div>
-          <Label htmlFor="position">
-            What do you do at {company.name || "your company"}?
-          </Label>
-          <Input
-            id="position"
-            value={profile.position}
-            onChange={(e) => updateProfileData("position", e.target.value)}
-            placeholder="Your position"
-            aria-describedby="position-error"
+      <form onSubmit={handleSubmit} className="flex flex-col">
+        <div className="space-y-6 text-gray-900">
+          <LogoUpload
+            onUpload={(file) =>
+              updateProfileData("avatar", URL.createObjectURL(file))
+            }
+            onRemove={() => updateProfileData("avatar", null)}
+            logo={profile.avatar}
+            companyInitial={profile.firstName.charAt(0)}
           />
+
+          <div className="space-y-5">
+            <div className="grid gap-4 md:grid-cols-2">
+              <FormField
+                id="firstName"
+                label="First name"
+                error={profileErrors.firstName}
+              >
+                <Input
+                  id="firstName"
+                  value={profile.firstName}
+                  onChange={(e) => updateProfileData("firstName", e.target.value)}
+                  placeholder="Jane"
+                  className="h-10 rounded-xl placeholder:text-base placeholder:text-gray-400"
+                />
+              </FormField>
+
+              <FormField
+                id="lastName"
+                label="Last name"
+                error={profileErrors.lastName}
+              >
+                <Input
+                  id="lastName"
+                  value={profile.lastName}
+                  onChange={(e) => updateProfileData("lastName", e.target.value)}
+                  placeholder="Doe"
+                  className="h-10 rounded-xl placeholder:text-base placeholder:text-gray-400"
+                />
+              </FormField>
+            </div>
+
+            <FormField
+              id="position"
+              label={`What do you do at ${company.name || "your company"}?`}
+              error={profileErrors.position}
+            >
+              <Input
+                id="position"
+                value={profile.position}
+                onChange={(e) => updateProfileData("position", e.target.value)}
+                placeholder="Your position"
+                className="h-10 rounded-xl placeholder:text-base placeholder:text-gray-400"
+              />
+            </FormField>
+          </div>
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex flex-col gap-4 mt-8">
+
           <Button
-            type="button"
-            variant="outline"
-            onClick={() => setCurrentStep("details")}
+            type="submit"
+            className="flex-1 rounded-3xl py-3 bg-electric-dark"
           >
-            Back
-          </Button>
-          <Button type="submit" className="flex-1">
             Continue
           </Button>
+          <div
+
+            onClick={() => setCurrentStep("details")}
+            className="text-gray-500 font-semibold flex items-center gap-1 cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </div>
         </div>
       </form>
     </StepLayout>
