@@ -10,14 +10,11 @@ import {
 } from "../../store/onboarding";
 import { LogoUpload } from "../ui/logoupload";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Link } from "lucide-react";
 import { StepLayout } from "../steplayout";
 import { useToast } from "@/components/ui/use-toast";
-import { FormField } from '../forms/FormField';
-import { SelectField } from '../forms/SelectField';
-import { AboutField } from '../forms/AboutField';
+import { FormField } from "../forms/FormField";
 
 export function CompanyStep() {
   const [data, setData] = useRecoilState(onboardingDataState);
@@ -25,7 +22,6 @@ export function CompanyStep() {
   const setErrors = useSetRecoilState(errorsState);
   const errors = useRecoilValue(errorsState);
   const setStepComplete = useSetRecoilState(markStepCompleteAction);
-  const completedSteps = useRecoilValue(completedStepsState);
   const { toast } = useToast();
 
   const { company } = data;
@@ -55,7 +51,6 @@ export function CompanyStep() {
     }
 
     try {
-
       setStepComplete("company");
       setCurrentStep("details");
 
@@ -86,9 +81,9 @@ export function CompanyStep() {
     <StepLayout
       step={1}
       title="Company info"
-      description="To build a trusted community, we verify all companies on our platform."
+      description="To build a trusted community, we verify all companies on our platform.Providing your website and Linkedin Profile allows us to confirm legitimacy and keep standards"
     >
-      <form onSubmit={handleSubmit} className="flex flex-col">
+      <form onSubmit={handleSubmit} className="flex  flex-col">
         <div className="space-y-6 text-gray-900">
           <LogoUpload
             onUpload={(file) =>
@@ -145,7 +140,9 @@ export function CompanyStep() {
                 <Input
                   id="linkedin"
                   value={company.linkedinProfile}
-                  onChange={(e) => updateCompanyData("linkedinProfile", e.target.value)}
+                  onChange={(e) =>
+                    updateCompanyData("linkedinProfile", e.target.value)
+                  }
                   className="h-10 rounded-xl placeholder:text-base placeholder:text-gray-400 pl-28"
                   placeholder="username"
                 />
@@ -154,7 +151,7 @@ export function CompanyStep() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 mt-8">
+        <div className="flex flex-col gap-4 mt-10">
           <Button
             type="submit"
             className="flex-1 rounded-3xl py-3 bg-electric-dark"

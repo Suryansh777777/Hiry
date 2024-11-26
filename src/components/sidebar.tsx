@@ -83,7 +83,7 @@ export function Sidebar() {
                     className={cn(
                       "absolute inset-y-0 left-0 w-0.5 transition-all duration-500",
                       {
-                        "bg-emerald-500": status === "completed",
+                        "bg-neon": status === "completed",
                         "border-l-2 border-dashed border-gray-200": status !== "completed",
                       }
                     )}

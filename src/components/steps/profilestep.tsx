@@ -15,12 +15,14 @@ import { StepLayout } from "../steplayout";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowLeft } from "lucide-react";
 import { FormField } from "../forms/FormField";
+import { BackButton } from "./BackButton";
 
 export function ProfileStep() {
   const [data, setData] = useRecoilState(onboardingDataState);
   const [currentStep, setCurrentStep] = useRecoilState(currentStepState);
   const [errors, setErrors] = useRecoilState(errorsState);
   const setStepComplete = useSetRecoilState(markStepCompleteAction);
+
   const { toast } = useToast();
 
   const { profile, company } = data;
@@ -49,9 +51,7 @@ export function ProfileStep() {
     }
 
     try {
-
       setStepComplete("profile");
-
 
       setCurrentStep("team");
 
@@ -105,7 +105,9 @@ export function ProfileStep() {
                 <Input
                   id="firstName"
                   value={profile.firstName}
-                  onChange={(e) => updateProfileData("firstName", e.target.value)}
+                  onChange={(e) =>
+                    updateProfileData("firstName", e.target.value)
+                  }
                   placeholder="Jane"
                   className="h-10 rounded-xl placeholder:text-base placeholder:text-gray-400"
                 />
@@ -119,7 +121,9 @@ export function ProfileStep() {
                 <Input
                   id="lastName"
                   value={profile.lastName}
-                  onChange={(e) => updateProfileData("lastName", e.target.value)}
+                  onChange={(e) =>
+                    updateProfileData("lastName", e.target.value)
+                  }
                   placeholder="Doe"
                   className="h-10 rounded-xl placeholder:text-base placeholder:text-gray-400"
                 />
@@ -142,22 +146,14 @@ export function ProfileStep() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 mt-8">
-
+        <div className="flex flex-col gap-7 mt-12">
           <Button
             type="submit"
             className="flex-1 rounded-3xl py-3 bg-electric-dark"
           >
             Continue
           </Button>
-          <div
-
-            onClick={() => setCurrentStep("details")}
-            className="text-gray-500 font-semibold flex items-center gap-1 cursor-pointer"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </div>
+          <BackButton onClick={() => setCurrentStep("details")} />
         </div>
       </form>
     </StepLayout>

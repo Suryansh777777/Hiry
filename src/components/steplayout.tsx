@@ -15,7 +15,7 @@ export function StepLayout({
   return (
     <div className="px-10 max-w-lg ">
       <div className="mb-8 ">
-        <h2 className="mb-3 text-md font-medium text-gray-500">
+        <h2 className="mb-3 text-md font-medium text-gray-500 tracking-tighter">
           Step {step}/4
         </h2>
         <h1 className="mb-3 text-3xl font-semibold text-gray-900">{title}</h1>

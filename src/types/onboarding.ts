@@ -26,6 +26,11 @@ export interface TeamMember {
   email: string;
   role: "Member" | "Admin";
 }
+export interface TeamErrors {
+  [key: number]: {
+    email?: string;
+  };
+}
 
 export interface OnboardingData {
   company: CompanyInfo;

@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
@@ -8,78 +6,128 @@ import {
   markStepCompleteAction,
 } from "../../store/onboarding";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Plus } from "lucide-react";
-import type { TeamMember } from "../../types/onboarding";
+import { Plus, ArrowLeft, ArrowRight } from "lucide-react";
 import { StepLayout } from "../steplayout";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft } from "lucide-react";
+import { TeamMemberField } from "../forms/TeamMemberField";
+import type { TeamMember } from "@/types/onboarding";
 
 export function TeamStep() {
   const [data, setData] = useRecoilState(onboardingDataState);
   const [currentStep, setCurrentStep] = useRecoilState(currentStepState);
   const setStepComplete = useSetRecoilState(markStepCompleteAction);
-  const [newMember, setNewMember] = useState<TeamMember>({
-    email: "",
-    role: "Member",
-  });
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const [errors, setErrors] = useState<Record<number, string>>({});
 
-  const validateMember = (email: string) => {
+  useState(() => {
+    if (data.team.length === 0) {
+      setData((prev) => ({
+        ...prev,
+        team: [{ email: "", role: "Member" }],
+      }));
+    }
+  });
+
+  const validateMember = (email: string, index: number) => {
     if (!email) return "Email is required";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Invalid email format";
-    if (data.team.some((member) => member.email === email)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      return "Invalid email format";
+
+    const duplicateIndex = data.team.findIndex(
+      (member, i) =>
+        i !== index && member.email.toLowerCase() === email.toLowerCase()
+    );
+    if (duplicateIndex !== -1) {
       return "This team member has already been added";
     }
     return null;
   };
 
   const addMember = () => {
-    const validationError = validateMember(newMember.email);
-    if (validationError) {
-      setError(validationError);
+    setData((prev) => ({
+      ...prev,
+      team: [...prev.team, { email: "", role: "Member" }],
+    }));
+  };
+
+  const removeMember = (index: number) => {
+    if (data.team.length <= 1) {
       toast({
         variant: "destructive",
-        title: "Validation Error",
-        description: validationError,
+        description: "You must have at least one team member.",
       });
       return;
     }
 
     setData((prev) => ({
       ...prev,
-      team: [...prev.team, newMember],
+      team: prev.team.filter((_, i) => i !== index),
     }));
-    setNewMember({ email: "", role: "Member" });
-    setError(null);
-    toast({
-      title: "Success",
-      description: "Team member added successfully.",
+
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors[index];
+      return newErrors;
     });
+  };
+
+  const updateMember = (
+    index: number,
+    field: keyof TeamMember,
+    value: string
+  ) => {
+    setData((prev) => ({
+      ...prev,
+      team: prev.team.map((member, i) =>
+        i === index ? { ...member, [field]: value } : member
+      ),
+    }));
+
+    if (field === "email") {
+      const error = validateMember(value, index);
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        if (error) {
+          newErrors[index] = error;
+        } else {
+          delete newErrors[index];
+        }
+        return newErrors;
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      // For the final step, we'll mark it complete even if there are no team members
-      setStepComplete("team");
+    // Validate all members
+    const newErrors: Record<number, string> = {};
+    let hasErrors = false;
 
+    data.team.forEach((member, index) => {
+      const error = validateMember(member.email, index);
+      if (error) {
+        newErrors[index] = error;
+        hasErrors = true;
+      }
+    });
+
+    if (hasErrors) {
+      setErrors(newErrors);
+      toast({
+        variant: "destructive",
+        title: "Validation Error",
+        description: "Please check all team member details are valid.",
+      });
+      return;
+    }
+
+    try {
+      setStepComplete("team");
       toast({
         title: "Success",
         description: "Onboarding completed successfully!",
       });
-
-      // Here you would typically submit the final data to your backend
       console.log("Final onboarding data:", data);
     } catch (error) {
       toast({
@@ -96,7 +144,6 @@ export function TeamStep() {
       title: "Skipped",
       description: "You can always add team members later.",
     });
-    // Handle skip action (e.g., redirect to dashboard)
   };
 
   return (
@@ -108,53 +155,22 @@ export function TeamStep() {
       <form onSubmit={handleSubmit} className="flex flex-col">
         <div className="space-y-6 text-gray-900">
           <div className="space-y-5">
-            <div className="space-y-2">
-              <Label>Team member details</Label>
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <Input
-                    type="email"
-                    value={newMember.email}
-                    onChange={(e) => {
-                      setNewMember({ ...newMember, email: e.target.value });
-                      setError(null);
-                    }}
-                    placeholder="example@email.com"
-                    className="h-10 rounded-xl placeholder:text-base placeholder:text-gray-400"
-                    aria-invalid={error ? "true" : "false"}
-                    aria-describedby={error ? "email-error" : undefined}
-                  />
-                  {error && (
-                    <p id="email-error" className="mt-1 text-sm text-red-500">
-                      {error}
-                    </p>
-                  )}
-                </div>
-                <Select
-                  value={newMember.role}
-                  onValueChange={(value) =>
-                    setNewMember({
-                      ...newMember,
-                      role: value as "Member" | "Admin",
-                    })
-                  }
-                >
-                  <SelectTrigger className="w-[140px] h-10 rounded-xl">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Member">Member</SelectItem>
-                    <SelectItem value="Admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            {data.team.map((member, index) => (
+              <TeamMemberField
+                key={index}
+                member={member}
+                index={index}
+                error={errors[index]}
+                onUpdate={updateMember}
+                onRemove={removeMember}
+              />
+            ))}
 
             <Button
               type="button"
               variant="outline"
               onClick={addMember}
-              className="flex items-center gap-2 h-10 rounded-xl"
+              className="flex items-center gap-2 h-10 rounded-3xl shadow-none"
             >
               <Plus className="h-4 w-4" aria-hidden="true" />
               Add invite
@@ -169,21 +185,26 @@ export function TeamStep() {
           >
             Continue
           </Button>
-          <div
-            onClick={() => setCurrentStep("profile")}
-            className="text-gray-500 font-semibold flex items-center gap-1 cursor-pointer"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
+          <div className="flex justify-between items-center gap-4">
+            <div
+              onClick={() => setCurrentStep("profile")}
+              className="text-gray-500 font-semibold flex items-center gap-1 cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={handleSkip}
+              className="text-gray-500"
+            >
+              Skip for now
+              <ArrowRight className="w-4 h-4" />
+            </Button>
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={handleSkip}
-            className="text-gray-500"
-          >
-            Skip for now
-          </Button>
+
+
         </div>
       </form>
     </StepLayout>

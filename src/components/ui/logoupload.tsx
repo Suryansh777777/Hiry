@@ -31,7 +31,7 @@ export function LogoUpload({
         });
         return;
       }
-      
+
       setUploadStatus("uploading");
       // Simulate upload process
       setTimeout(() => {
@@ -94,14 +94,14 @@ export function LogoUpload({
               <>
                 <label
                   htmlFor="logo-upload"
-                  className="inline-flex cursor-pointer items-center justify-center rounded-3xl bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                  className="inline-flex cursor-pointer items-center justify-center rounded-3xl bg-white border border-1 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-0 focus:ring-gray-500 focus:ring-offset-0"
                 >
                   Replace
                 </label>
                 <Button
                   variant="outline"
                   onClick={handleRemove}
-                  className="text-sm text-red-600 hover:text-red-700"
+                  className="text-sm border border-red-600 text-red-600 rounded-3xl hover:text-red-700 px-3 py-1.5"
                 >
                   Remove
                 </Button>
