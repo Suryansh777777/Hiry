@@ -5,7 +5,6 @@ import {
   onboardingDataState,
   currentStepState,
   errorsState,
-  markStepCompleteAction,
   completedStepsState,
 } from "../../store/onboarding";
 import { LogoUpload } from "../ui/logoupload";
@@ -16,13 +15,14 @@ import { StepLayout } from "../steplayout";
 import { useToast } from "@/components/ui/use-toast";
 import { FormField } from "../forms/FormField";
 import { LinkIcon } from "../icons";
+import { useMarkStepComplete } from "../../store/onboarding";
 
 export function CompanyStep() {
   const [data, setData] = useRecoilState(onboardingDataState);
   const [currentStep, setCurrentStep] = useRecoilState(currentStepState);
   const setErrors = useSetRecoilState(errorsState);
   const errors = useRecoilValue(errorsState);
-  const setStepComplete = useSetRecoilState(markStepCompleteAction);
+  const markStepComplete = useMarkStepComplete();
   const { toast } = useToast();
 
   const { company } = data;
@@ -52,7 +52,7 @@ export function CompanyStep() {
     }
 
     try {
-      setStepComplete("company");
+      markStepComplete("company");
       setCurrentStep("details");
 
       // toast({

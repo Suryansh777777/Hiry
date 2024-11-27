@@ -5,7 +5,7 @@ import {
   onboardingDataState,
   currentStepState,
   errorsState,
-  markStepCompleteAction,
+  completedStepsState,
 } from "../../store/onboarding";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,7 @@ export function ProfileStep() {
   const [data, setData] = useRecoilState(onboardingDataState);
   const [currentStep, setCurrentStep] = useRecoilState(currentStepState);
   const [errors, setErrors] = useRecoilState(errorsState);
-  const setStepComplete = useSetRecoilState(markStepCompleteAction);
+  const setCompletedSteps = useSetRecoilState(completedStepsState);
 
   const { toast } = useToast();
 
@@ -49,7 +49,10 @@ export function ProfileStep() {
     }
 
     try {
-      setStepComplete("profile");
+      setCompletedSteps((prev) => ({
+        ...prev,
+        profile: true,
+      }));
 
       setCurrentStep("team");
 

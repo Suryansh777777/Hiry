@@ -3,7 +3,7 @@ import {
   onboardingDataState,
   currentStepState,
   errorsState,
-  markStepCompleteAction,
+  completedStepsState,
 } from "../../store/onboarding";
 import { Button } from "@/components/ui/button";
 import { StepLayout } from "../steplayout";
@@ -23,11 +23,18 @@ export function DetailsStep() {
   const [data, setData] = useRecoilState(onboardingDataState);
   const [currentStep, setCurrentStep] = useRecoilState(currentStepState);
   const [errors, setErrors] = useRecoilState(errorsState);
-  const setStepComplete = useSetRecoilState(markStepCompleteAction);
+  const setCompletedSteps = useSetRecoilState(completedStepsState);
   const { toast } = useToast();
 
   const { details } = data;
   const detailsErrors = errors.details || {};
+
+  const markStepComplete = () => {
+    setCompletedSteps((prev) => ({
+      ...prev,
+      details: true,
+    }));
+  };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -59,7 +66,7 @@ export function DetailsStep() {
     }
 
     try {
-      setStepComplete("details");
+      markStepComplete();
       setCurrentStep("profile");
     } catch (error) {
       toast({

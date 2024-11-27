@@ -1,4 +1,4 @@
-import { atom, selector } from "recoil";
+import { atom, selector, useSetRecoilState } from "recoil";
 import type { OnboardingData, OnboardingStep } from "../types/onboarding";
 
 // Base onboarding data state
@@ -58,13 +58,12 @@ export const isStepCompleteState = selector({
 });
 
 // Action to mark step as complete
-export const markStepCompleteAction = selector({
-  key: "markStepComplete",
-  get: ({ get }) => get(completedStepsState),
-  set: ({ set }, stepId: OnboardingStep) => {
-    set(completedStepsState, (prevState) => ({
-      ...prevState,
+export const useMarkStepComplete = () => {
+  const setCompletedSteps = useSetRecoilState(completedStepsState);
+  return (stepId: OnboardingStep) => {
+    setCompletedSteps((prev: Record<OnboardingStep, boolean>) => ({
+      ...prev,
       [stepId]: true,
     }));
-  },
-});
+  };
+};

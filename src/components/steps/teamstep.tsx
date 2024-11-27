@@ -3,7 +3,6 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   onboardingDataState,
   currentStepState,
-  markStepCompleteAction,
 } from "../../store/onboarding";
 import { Button } from "@/components/ui/button";
 import { Plus, ArrowLeft, ArrowRight } from "lucide-react";
@@ -11,13 +10,14 @@ import { StepLayout } from "../steplayout";
 import { useToast } from "@/components/ui/use-toast";
 import { TeamMemberField } from "../forms/TeamMemberField";
 import type { TeamMember } from "@/types/onboarding";
+import { useMarkStepComplete } from "../../store/onboarding";
 
 export function TeamStep() {
   const [data, setData] = useRecoilState(onboardingDataState);
   const [currentStep, setCurrentStep] = useRecoilState(currentStepState);
-  const setStepComplete = useSetRecoilState(markStepCompleteAction);
   const { toast } = useToast();
   const [errors, setErrors] = useState<Record<number, string>>({});
+  const markStepComplete = useMarkStepComplete();
 
   useState(() => {
     if (data.team.length === 0) {
@@ -123,7 +123,7 @@ export function TeamStep() {
     }
 
     try {
-      setStepComplete("team");
+      markStepComplete("team");
       toast({
         title: "Success",
         description: "Onboarding completed successfully!",
@@ -139,7 +139,7 @@ export function TeamStep() {
   };
 
   const handleSkip = () => {
-    setStepComplete("team");
+    markStepComplete("team");
     toast({
       title: "Skipped",
       description: "You can always add team members later.",
