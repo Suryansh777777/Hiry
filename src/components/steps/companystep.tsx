@@ -15,6 +15,7 @@ import { Link } from "lucide-react";
 import { StepLayout } from "../steplayout";
 import { useToast } from "@/components/ui/use-toast";
 import { FormField } from "../forms/FormField";
+import { LinkIcon } from "../icons";
 
 export function CompanyStep() {
   const [data, setData] = useRecoilState(onboardingDataState);
@@ -116,7 +117,7 @@ export function CompanyStep() {
             >
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
-                  <Link className="h-4 w-4 text-gray-400" />
+                  <LinkIcon />
                 </div>
                 <Input
                   id="website"
@@ -151,7 +152,7 @@ export function CompanyStep() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 mt-10">
+        <div className="flex flex-col gap-4 mt-8">
           <Button
             type="submit"
             className="flex-1 rounded-3xl py-3 bg-electric-dark"

@@ -11,33 +11,13 @@ import { useToast } from "@/components/ui/use-toast";
 import { AboutField } from "../forms/AboutField";
 import { SelectField } from "../forms/SelectField";
 import { LanguageSelect } from "../forms/LanguageSelect";
-import { BackButton } from "../steps/BackButton";
-
-const INDUSTRY_OPTIONS = [
-  { value: "tech", label: "Technology" },
-  { value: "finance", label: "Finance" },
-  { value: "healthcare", label: "Healthcare" },
-  { value: "education", label: "Education" },
-  { value: "retail", label: "Retail" },
-  { value: "manufacturing", label: "Manufacturing" },
-  { value: "other", label: "Other" },
-];
-
-const LOCATION_OPTIONS = [
-  { value: "us", label: "United States" },
-  { value: "uk", label: "United Kingdom" },
-  { value: "eu", label: "Europe" },
-  { value: "asia", label: "Asia" },
-  { value: "other", label: "Other" },
-];
-
-const TIMEZONE_OPTIONS = [
-  { value: "gmt-8", label: "(GMT-8) Pacific Time" },
-  { value: "gmt-5", label: "(GMT-5) Eastern Time" },
-  { value: "gmt+0", label: "(GMT+0) Greenwich Mean Time" },
-  { value: "gmt+5.5", label: "(GMT+5:30) India Standard Time" },
-  { value: "other", label: "Other" },
-];
+import { BackButton } from "../forms/BackButton";
+import {
+  INDUSTRY_OPTIONS,
+  LOCATION_OPTIONS,
+  TIMEZONE_OPTIONS,
+} from "@/store/data";
+import { LocationIcon, TimezoneIcon } from "../icons";
 
 export function DetailsStep() {
   const [data, setData] = useRecoilState(onboardingDataState);
@@ -130,30 +110,7 @@ export function DetailsStep() {
               options={LOCATION_OPTIONS}
               placeholder="Select location"
               error={detailsErrors.location}
-              icon={
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M12.5 8.75C12.5 10.1307 11.3807 11.25 10 11.25C8.61929 11.25 7.5 10.1307 7.5 8.75C7.5 7.36929 8.61929 6.25 10 6.25C11.3807 6.25 12.5 7.36929 12.5 8.75Z"
-                    stroke="#71717A"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M16.25 8.75C16.25 14.7018 10 18.125 10 18.125C10 18.125 3.75 14.7018 3.75 8.75C3.75 5.29822 6.54822 2.5 10 2.5C13.4518 2.5 16.25 5.29822 16.25 8.75Z"
-                    stroke="#71717A"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              }
+              icon={<LocationIcon />}
             />
 
             <LanguageSelect
@@ -172,23 +129,7 @@ export function DetailsStep() {
               options={TIMEZONE_OPTIONS}
               placeholder="Select timezone"
               error={detailsErrors.timezone}
-              icon={
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 5V10H13.75M17.5 10C17.5 14.1421 14.1421 17.5 10 17.5C5.85786 17.5 2.5 14.1421 2.5 10C2.5 5.85786 5.85786 2.5 10 2.5C14.1421 2.5 17.5 5.85786 17.5 10Z"
-                    stroke="#71717A"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              }
+              icon={<TimezoneIcon />}
             />
           </div>
         </div>

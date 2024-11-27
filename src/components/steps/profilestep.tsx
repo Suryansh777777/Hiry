@@ -9,13 +9,11 @@ import {
 } from "../../store/onboarding";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { LogoUpload } from "../ui/logoupload";
 import { StepLayout } from "../steplayout";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft } from "lucide-react";
 import { FormField } from "../forms/FormField";
-import { BackButton } from "./BackButton";
+import { BackButton } from "../forms/BackButton";
 
 export function ProfileStep() {
   const [data, setData] = useRecoilState(onboardingDataState);
@@ -146,7 +144,7 @@ export function ProfileStep() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-7 mt-12">
+        <div className="flex flex-col gap-7 mt-8">
           <Button
             type="submit"
             className="flex-1 rounded-3xl py-3 bg-electric-dark"

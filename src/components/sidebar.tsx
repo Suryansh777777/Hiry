@@ -4,8 +4,13 @@ import { useRecoilValue } from "recoil";
 import { currentStepState, completedStepsState } from "../store/onboarding";
 import type { OnboardingStep } from "../types/onboarding";
 import { cn } from "@/lib/utils";
-import { CompanyIcon, DetailsIcon, ProfileIcon, TeamIcon } from "./icons";
-import { Check } from "lucide-react";
+import {
+  CheckIcon,
+  CompanyIcon,
+  DetailsIcon,
+  ProfileIcon,
+  TeamIcon,
+} from "./icons";
 
 interface SidebarItem {
   id: OnboardingStep;
@@ -25,8 +30,10 @@ export function Sidebar() {
   const completedSteps = useRecoilValue(completedStepsState);
 
   const getStepStatus = (stepId: OnboardingStep) => {
-    const stepIndex = sidebarItems.findIndex(item => item.id === stepId);
-    const currentIndex = sidebarItems.findIndex(item => item.id === currentStep);
+    const stepIndex = sidebarItems.findIndex((item) => item.id === stepId);
+    const currentIndex = sidebarItems.findIndex(
+      (item) => item.id === currentStep
+    );
 
     if (completedSteps[stepId]) return "completed";
     if (stepId === currentStep) return "current";
@@ -49,18 +56,20 @@ export function Sidebar() {
                     "relative flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300",
                     {
                       "bg-neon": status === "completed",
-                      "bg-white rounded-full border border-gray-200 shadow-xl": status === "current",
+                      "bg-white rounded-full border border-gray-200 shadow-xl":
+                        status === "current",
                       "bg-lavender": status === "upcoming" || status === "past",
                     }
                   )}
                 >
                   {status === "completed" ? (
-                    <Check className="h-5 w-5 text-lime transition-all duration-300" />
+                    <CheckIcon />
                   ) : (
                     <Icon
                       className={cn("h-5 w-5 transition-all duration-300", {
                         "text-white": status === "current",
-                        "text-gray-400": status === "upcoming" || status === "past",
+                        "text-gray-400":
+                          status === "upcoming" || status === "past",
                       })}
                     />
                   )}
@@ -84,7 +93,8 @@ export function Sidebar() {
                       "absolute inset-y-0 left-0 w-0.5 transition-all duration-500",
                       {
                         "bg-neon": status === "completed",
-                        "border-l-2 border-dashed border-gray-200": status !== "completed",
+                        "border-l-2 border-dashed border-lightpurple":
+                          status !== "completed",
                       }
                     )}
                   />

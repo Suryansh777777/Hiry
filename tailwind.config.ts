@@ -10,7 +10,6 @@ const config: Config = {
   ],
   theme: {
     container: {
-      center: "true",
       padding: {
         DEFAULT: "1rem",
         md: "2rem",
@@ -32,13 +31,14 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
-        neon: '#DCFF7A',
-        'neon-light': '#F1FFC7',
-        electric: '#0E0CFF',
-        'electric-dark': '#0500FF',
-        purple: '#7730F7',
-        lime: '#49670D',
-        lavender: '#F4F2FF',
+        lightpurple: "#C1B1FE",
+        neon: "#DCFF7A",
+        "neon-light": "#F1FFC7",
+        electric: "#0E0CFF",
+        "electric-dark": "#0500FF",
+        purple: "#7730F7",
+        lime: "#49670D",
+        lavender: "#F4F2FF",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

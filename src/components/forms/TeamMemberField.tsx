@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Mail, Trash2 } from "lucide-react";
 import type { TeamMember } from "@/types/onboarding";
+import { MailIcon } from "../icons";
 
 interface TeamMemberFieldProps {
   member: TeamMember;
@@ -31,7 +32,7 @@ export function TeamMemberField({
       <div className="flex-1">
         <div className="relative">
           <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
-            <Mail className="h-5 w-5 text-gray-400" />
+            <MailIcon />
           </div>
           <Input
             type="email"
@@ -44,10 +45,7 @@ export function TeamMemberField({
           />
         </div>
         {error && (
-          <p
-            id={`email-error-${index}`}
-            className="mt-1 text-sm text-red-500"
-          >
+          <p id={`email-error-${index}`} className="mt-1 text-sm text-red-500">
             {error}
           </p>
         )}
@@ -76,6 +74,5 @@ export function TeamMemberField({
         {index > 0 && <Trash2 className="h-4 w-4 text-red-600" />}
       </Button>
     </div>
-
   );
 }

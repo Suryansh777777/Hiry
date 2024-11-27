@@ -203,8 +203,6 @@ export function TeamStep() {
               <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
-
-
         </div>
       </form>
     </StepLayout>
